@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/workspaces/Minesweeper/build",
+  "command": "/usr/bin/g++ -g -std=gnu++23 -o CMakeFiles/Minesweeper.dir/src/main.cpp.o -c /workspaces/Minesweeper/src/main.cpp",
+  "file": "/workspaces/Minesweeper/src/main.cpp"
+}
+]
