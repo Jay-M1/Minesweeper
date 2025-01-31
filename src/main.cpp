@@ -111,7 +111,7 @@ void PrintBanner() {
 
 std::tuple<int,int> Determine_difficulty() {
     std::string difficulty;
-    std::cout << "Please select a difficulty: \nBeginner, Advanced or Professional?" << std::endl;
+    std::cout << "Please select a difficultyy: \nBeginner, Advanced or Professional?" << std::endl;
     std::cin >> difficulty;
 
     if (difficulty == "Beginner") {
