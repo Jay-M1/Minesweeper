@@ -80,7 +80,7 @@ int main (int argc, char* argv[]) {
         // loop over cells
         for (int counts = 0; counts < 4; counts++){
             for (int i = 0; i < rows; i++) {
-                if (counts==3){std::cout << std::setw(padding) << "";}
+          
                 for (int j = 0; j < cols; j++) {
                     
                     // reveal adjacent cells if no adjacent mines
@@ -95,12 +95,24 @@ int main (int argc, char* argv[]) {
                         }
                     }
 
-                    if (counts==3){std::cout << vector[i][j].getSymbol() << " ";}
+              
 
                 }
-                if (counts==3){std::cout << std::endl;}
+              
             }
         }
+
+        
+        for (int i = 0; i < rows; i++) {
+            std::cout << std::setw(padding) << "";
+            for (int j = 0; j < cols; j++) {
+            
+                std::cout << vector[i][j].getSymbol() << " ";
+
+            }
+            std::cout << std::endl;
+        }
+        
 
 
         // break out if game over
