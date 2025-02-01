@@ -53,9 +53,6 @@ char Cell::getSymbol() const {
     else if (!revealed) {
         return '#';
     }
-    else if (adjacentMines == 0) {
-        return ' ';
-    }
     else {
         return '0' + adjacentMines;
     }

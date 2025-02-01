@@ -73,19 +73,32 @@ int main (int argc, char* argv[]) {
         char userCellInteraction = GetUserCellInteraction();
         
         // act depending on user input
+        // f
+        if (userCellInteraction == 'f') {
+            vector[userRowSelection][userColumnSelection].setFlagged(true);
+            }
+
+        // r
         if (userCellInteraction == 'r') {
+
+            // reveal
             vector[userRowSelection][userColumnSelection].setRevealed(true);
 
+            // if mine
             if (vector[userRowSelection][userColumnSelection].isMine()) {
 
                 vector[userRowSelection][userColumnSelection].setExploded(true);
                 std::cout << "You hit a mine! Game over." << std::endl;
                 game_over = true;
             }
-            else { // if revealed cell is not a mine
+
+            // if not a mine
+            else {
+
+                // count adjacent Mines
                 int adjacentMines = 0;
                 for (int i = userRowSelection-1; i <= userRowSelection+1; i++) {
-                    if (i > rows || i < 1) {continue;} // catching if it is on the rand
+                    if (i > rows-1 || i < 1) {continue;} // catching if it is on the margin
                     for (int j = userColumnSelection-1; j<= userColumnSelection+1; j++) {
                         if (j > cols || j < 1) {continue;} // catching
                         if (vector[i][j].isMine()) {
@@ -93,14 +106,10 @@ int main (int argc, char* argv[]) {
                         }
                     }
                 }
+                // set adjacent mines
                 vector[userRowSelection][userColumnSelection].setAdjacentMines(adjacentMines);
-
             }
         }
-        else {
-            
-                vector[userRowSelection][userColumnSelection].setFlagged(true);
-                }
     }
 
     return 0;
