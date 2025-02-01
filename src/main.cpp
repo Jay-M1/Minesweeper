@@ -15,7 +15,6 @@ char GetUserCellInteraction();
 int GetUserNumberSelection(int limit);
 int getTerminalWidth();
 void PlaceMines(std::vector<std::vector<Cell>>& field, int numMines);
-int CountSurroundingMines(const std::vector<std::vector<Cell>>& field, int row, int col);
 
 int main (int argc, char* argv[]) {
 
@@ -49,20 +48,60 @@ int main (int argc, char* argv[]) {
 
     // game loop
     bool game_over = false;
+
+    for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                
+                // count adjacent Mines
+                int adjacentMines = 0;           
+                for (int k = i-1; k <= i+1; k++) {
+                    if (k >= rows || k < 0) {continue;} // catching if it is on the margin
+
+                    for (int l = j-1; l<= j+1; l++) {
+                        if (l > cols || l < 0) {continue;} // catching
+                        
+                        if (vector[k][l].isMine()){adjacentMines++;}
+                    }
+                }
+
+                // set adjacent mines
+                vector[i][j].setAdjacentMines(adjacentMines);
+
+            }
+          
+        }
+
     while (true) {
 
         // Clear the terminal
         std::cout << "\033[2J\033[H";
         std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" << std::endl;
 
-        // display vectors
-        for (int i = 0; i < rows; i++) {
-            std::cout << std::setw(padding) << "";
-            for (int j = 0; j < cols; j++) {
-                std::cout << vector[i][j].getSymbol() << " ";
+        // loop over cells
+        for (int counts = 0; counts < 4; counts++){
+            for (int i = 0; i < rows; i++) {
+                if (counts==3){std::cout << std::setw(padding) << "";}
+                for (int j = 0; j < cols; j++) {
+                    
+                    // reveal adjacent cells if no adjacent mines
+                    if (vector[i][j].getAdjacentMines() == 0 && vector[i][j].isRevealed() && !vector[i][j].isMine()) {
+                        
+                        for (int k = i-1; k <= i+1; k++) {
+                            if (k >= rows || k < 0) {continue;} // catching if it is on the margin
+                            for (int l = j-1; l<= j+1; l++) {
+                                if (l > cols || l < 0) {continue;} // catching
+                                vector[k][l].setRevealed(true);
+                            }
+                        }
+                    }
+
+                    if (counts==3){std::cout << vector[i][j].getSymbol() << " ";}
+
+                }
+                if (counts==3){std::cout << std::endl;}
             }
-            std::cout << std::endl;
         }
+
 
         // break out if game over
         if (game_over) {break;}
@@ -90,24 +129,6 @@ int main (int argc, char* argv[]) {
                 vector[userRowSelection][userColumnSelection].setExploded(true);
                 std::cout << "You hit a mine! Game over." << std::endl;
                 game_over = true;
-            }
-
-            // if not a mine
-            else {
-
-                // count adjacent Mines
-                int adjacentMines = 0;
-                for (int i = userRowSelection-1; i <= userRowSelection+1; i++) {
-                    if (i > rows-1 || i < 1) {continue;} // catching if it is on the margin
-                    for (int j = userColumnSelection-1; j<= userColumnSelection+1; j++) {
-                        if (j > cols || j < 1) {continue;} // catching
-                        if (vector[i][j].isMine()) {
-                            adjacentMines++;
-                        }
-                    }
-                }
-                // set adjacent mines
-                vector[userRowSelection][userColumnSelection].setAdjacentMines(adjacentMines);
             }
         }
     }
@@ -144,22 +165,22 @@ void PrintBanner() {
 }
 
 std::tuple<int,int,float> Determine_difficulty() {
-    std::string difficulty;
+    int difficulty;
     std::cout << "Please select a difficulty: \nBeginner (1), Advanced (2) or Professional (3)?" << std::endl;
     std::cout << "\n\nBeginner: Spielfeld von 8 mal 8 (64) Feldern mit 10 Minen (Minendichte 15,6 %)." << std::endl;
     std::cout << "\nAdvanced: Spielfeld von 16 mal 16 (256) Feldern mit 40 Minen (15,6 %)." << std::endl;
     std::cout << "\nProfessional: Spielfeld von 30 mal 16 (480) Feldern mit 99 Minen (20,6 %)." << std::endl;
     std::cin >> difficulty;
 
-    if (difficulty == "1") {
+    if (difficulty == 1) {
         
         return std::make_tuple(8, 8, 0.156);
     }
-    else if (difficulty == "2") {
+    else if (difficulty == 2) {
         
         return std::make_tuple(16, 16, 0.156);
     }
-    else if (difficulty == "3") {
+    else if (difficulty == 3) {
         
         return std::make_tuple(30, 16, 0.206);
     }
@@ -234,22 +255,4 @@ void PlaceMines(std::vector<std::vector<Cell>>& field, int numMines) {
     }
 }
 
-int SurroundingMines(const std::vector<std::vector<Cell>> field, int row, int col) {
-    int rows = field.size();
-    int cols = field[0].size();
-    int mineCount = 0;
 
-    for (int i = -1; i <= 1; ++i) {
-        for (int j = -1; j <= 1; ++j) {
-            int newRow = row + i;
-            int newCol = col + j;
-            if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
-                if (field[newRow][newCol].isMine()) {
-                    ++mineCount;
-                }
-            }
-        }
-    }
-
-    return mineCount;
-}
