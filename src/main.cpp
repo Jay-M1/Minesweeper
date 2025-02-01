@@ -114,7 +114,11 @@ int main (int argc, char* argv[]) {
         // act depending on user input
         // f
         if (userCellInteraction == 'f') {
-            vector[userRowSelection][userColumnSelection].setFlagged(true);
+            if (vector[userRowSelection][userColumnSelection].isFlagged()) {
+                vector[userRowSelection][userColumnSelection].setFlagged(false);}
+            else {
+                vector[userRowSelection][userColumnSelection].setFlagged(true);
+            }
             }
 
         // r
