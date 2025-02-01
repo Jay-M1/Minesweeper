@@ -9,7 +9,7 @@
 #include <ctime> // time for random seed
 
 void PrintBanner();
-std::tuple<int,int> Determine_difficulty();
+std::tuple<int,int,float> Determine_difficulty();
 void GetCellUpdate(Cell cell);
 char GetUserCellInteraction();
 int GetUserNumberSelection(int limit);
@@ -19,20 +19,22 @@ int CountSurroundingMines(const std::vector<std::vector<Cell>>& field, int row, 
 
 int main (int argc, char* argv[]) {
 
-    // create field and distribute mines
+    // create field
     PrintBanner();
-    std::tuple<int,int> dimension = Determine_difficulty();
+    std::tuple<int,int,float> dimension = Determine_difficulty();
+    float diff = std::get<2>(dimension);
     int rows = std::get<0>(dimension);
     int cols = std::get<1>(dimension);
     Field MyField(rows, cols);
     std::vector<std::vector<Cell>> vector = MyField.getVector();
+
+    // distribute mines
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> dis(0.0, 1.0);
-
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
-            if (dis(gen) < 0.5) {
+            if (dis(gen) < diff) {
                 vector[i][j].setMine(true);
             } else {
                 vector[i][j].setMine(false);
@@ -40,6 +42,7 @@ int main (int argc, char* argv[]) {
         }
     }
 
+    //getet
     int terminalWidth = getTerminalWidth();
     int fieldWidth = cols * 1; // Assuming each cell takes 2 characters (1 for symbol and 1 for space)
     int padding = (terminalWidth - fieldWidth) / 2;
@@ -193,7 +196,7 @@ void PrintBanner() {
     std::cout << "\n\n\n\n" << std::endl;
 }
 
-std::tuple<int,int> Determine_difficulty() {
+std::tuple<int,int,float> Determine_difficulty() {
     std::string difficulty;
     std::cout << "Please select a difficulty: \nBeginner (1), Advanced (2) or Professional (3)?" << std::endl;
     std::cout << "\n\nBeginner: Spielfeld von 8 mal 8 (64) Feldern mit 10 Minen (Minendichte 15,6 %)." << std::endl;
@@ -203,21 +206,21 @@ std::tuple<int,int> Determine_difficulty() {
 
     if (difficulty == "1") {
         
-        return std::make_tuple(8, 8);
+        return std::make_tuple(8, 8, 0.156);
     }
     else if (difficulty == "2") {
         
-        return std::make_tuple(16, 16);
+        return std::make_tuple(16, 16, 0.156);
     }
     else if (difficulty == "3") {
         
-        return std::make_tuple(30, 16);
+        return std::make_tuple(30, 16, 0.206);
     }
     else {
         std::cout << "\nInvalid input. Try again." << std::endl;
         Determine_difficulty();
     }
-    return std::make_tuple(0, 0);
+    return std::make_tuple(0, 0, 0.0);
 }
 
 void GetCellUpdate(Cell cell){
