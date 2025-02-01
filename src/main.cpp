@@ -42,17 +42,20 @@ int main (int argc, char* argv[]) {
         }
     }
 
-    //getet
+    // center field
     int terminalWidth = getTerminalWidth();
     int fieldWidth = cols * 1; // Assuming each cell takes 2 characters (1 for symbol and 1 for space)
     int padding = (terminalWidth - fieldWidth) / 2;
 
+    // game loop
     bool game_over = false;
     while (true) {
+
         // Clear the terminal
         std::cout << "\033[2J\033[H";
         std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" << std::endl;
-        // display vector
+
+        // display vectors
         for (int i = 0; i < rows; i++) {
             std::cout << std::setw(padding) << "";
             for (int j = 0; j < cols; j++) {
@@ -61,55 +64,21 @@ int main (int argc, char* argv[]) {
             std::cout << std::endl;
         }
 
+        // break out if game over
         if (game_over) {break;}
-        // get entered value of the user
+
+        // otherwise get entered value of the user
         int userRowSelection = GetUserNumberSelection(rows);
         int userColumnSelection = GetUserNumberSelection(cols);
         char userCellInteraction = GetUserCellInteraction();
         
-        // update cell
-        /*std::cout << "\033[2J\033[H" << std::endl;
-        std::cout << "\n\n\n\n\n\n\n\n\n" << std::endl;
-        std::cout << "\033[2J\033[H" << std::endl;
-        std::cout << "\n\n\n\n\n\n\n\n\n" << std::endl;*/
+        // act depending on user input
         if (userCellInteraction == 'r') {
             vector[userRowSelection][userColumnSelection].setRevealed(true);
 
             if (vector[userRowSelection][userColumnSelection].isMine()) {
 
                 vector[userRowSelection][userColumnSelection].setExploded(true);
-                // display vector
-                /*
-                int mineCount = 0;
-                for (int i = 0; i < rows; i++) {
-                    std::cout << std::setw(padding) << "";
-                    for (int j = 0; j < cols; j++) {
-                        if (vector[i][j].isRevealed()) {
-                            if (vector[i][j].isMine()) {
-                                std::cout << "X ";
-                            } else {
-                                int mineCount = 0;
-                                // Count surrounding mines
-                                for (int di = -1; di <= 1; ++di) {
-                                    for (int dj = -1; dj <= 1; ++dj) {
-                                        int newRow = i + di;
-                                        int newCol = j + dj;
-                                        if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
-                                            if (vector[newRow][newCol].isMine()) {
-                                                ++mineCount;
-                                            }
-                                        }
-                                    }
-                                }
-                                std::cout << mineCount << " ";
-                            }
-                        } else {
-                            std::cout << vector[i][j].getSymbol() << " ";
-                        }
-                    }
-                    std::cout << std::endl;
-                }*/
-
                 std::cout << "You hit a mine! Game over." << std::endl;
                 game_over = true;
             }
@@ -130,37 +99,6 @@ int main (int argc, char* argv[]) {
         }
         else {
             
-                /*
-                int mineCount = 0;
-                for (int i = 0; i < rows; i++) {
-                    std::cout << std::setw(padding) << "";
-                    for (int j = 0; j < cols; j++) {
-                        if (vector[i][j].isRevealed()) {
-                            if (vector[i][j].isMine()) {
-                                std::cout << "* ";
-                            } else {
-                                int mineCount = 0;
-                                // Count surrounding mines
-                                for (int di = -1; di <= 1; ++di) {
-                                    for (int dj = -1; dj <= 1; ++dj) {
-                                        int newRow = i + di;
-                                        int newCol = j + dj;
-                                        if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
-                                            if (vector[newRow][newCol].isMine()) {
-                                                ++mineCount;
-                                            }
-                                        }
-                                    }
-                                }
-                                std::cout << mineCount << " ";
-                            }
-                        } else {
-                            std::cout << vector[i][j].getSymbol() << " ";
-                        }
-                    }
-                    std::cout << std::endl;
-                }*/
-
                 vector[userRowSelection][userColumnSelection].setFlagged(true);
                 }
     }
