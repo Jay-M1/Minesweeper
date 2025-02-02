@@ -313,8 +313,18 @@ CMakeFiles/Minesweeper.dir/src/main.cpp.o: /workspaces/Minesweeper/src/main.cpp 
   /usr/include/c++/12/bits/locale_conv.h \
   /usr/include/c++/12/bits/quoted_string.h \
   /usr/include/c++/12/sstream \
-  /usr/include/c++/12/bits/sstream.tcc
+  /usr/include/c++/12/bits/sstream.tcc \
+  /usr/include/c++/12/fstream \
+  /usr/include/x86_64-linux-gnu/c++/12/bits/basic_file.h \
+  /usr/include/x86_64-linux-gnu/c++/12/bits/c++io.h \
+  /usr/include/c++/12/bits/fstream.tcc
 
+
+/usr/include/c++/12/bits/fstream.tcc:
+
+/usr/include/x86_64-linux-gnu/c++/12/bits/c++io.h:
+
+/usr/include/x86_64-linux-gnu/c++/12/bits/basic_file.h:
 
 /usr/include/c++/12/sstream:
 
@@ -353,6 +363,8 @@ CMakeFiles/Minesweeper.dir/src/main.cpp.o: /workspaces/Minesweeper/src/main.cpp 
 /usr/include/c++/12/bits/specfun.h:
 
 /usr/include/x86_64-linux-gnu/bits/iscanonical.h:
+
+/usr/include/c++/12/fstream:
 
 /usr/include/x86_64-linux-gnu/bits/fp-fast.h:
 

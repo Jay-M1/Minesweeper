@@ -7,6 +7,7 @@
 #include <cstdlib> // for system()
 #include <iomanip> // for setw()
 #include <ctime> // time for random seed
+#include <fstream>
 
 void PrintBanner();
 std::tuple<int,int,float> Determine_difficulty();
@@ -15,6 +16,7 @@ char GetUserCellInteraction();
 int GetUserNumberSelection(int limit);
 int getTerminalWidth();
 void PlaceMines(std::vector<std::vector<Cell>>& field, int numMines);
+void SaveDataToFile(const std::vector<int>& data, const std::string& filename);
 
 int main (int argc, char* argv[]) {
 
@@ -33,7 +35,7 @@ int main (int argc, char* argv[]) {
     std::uniform_real_distribution<> dis(0.0, 1.0);
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
-            if (dis(gen) < diff) {
+            if (dis(gen) < 0.01) {
                 vector[i][j].setMine(true);
             } else {
                 vector[i][j].setMine(false);
@@ -48,10 +50,13 @@ int main (int argc, char* argv[]) {
 
     // game loop
     bool game_over = false;
+    int mineCount = 0;
 
     for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 
+                // count mines
+                if (vector[i][j].isMine()) {mineCount++;}
                 // count adjacent Mines
                 int adjacentMines = 0;           
                 for (int k = i-1; k <= i+1; k++) {
@@ -70,19 +75,32 @@ int main (int argc, char* argv[]) {
             }
           
         }
-
+    int revealedCells=0;
+    bool won = false;
     while (true) {
 
         // Clear the terminal
-        std::cout << "\033[2J\033[H";
+        //std::cout << "\033[2J\033[H";
         std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" << std::endl;
 
-        // loop over cells
-        for (int counts = 0; counts < 4; counts++){
+        // loop over cells to adjust cell states
+        std::cout << "revcells" << revealedCells << std::endl;
+                    std::cout << "rows*cols" << rows*cols << std::endl;
+                    std::cout << "mines" << mineCount << std::endl;
+                    revealedCells = 0;
+        
+        for (int counts = 0; counts < 64; counts++){
+            revealedCells = 0;
+            
             for (int i = 0; i < rows; i++) {
           
                 for (int j = 0; j < cols; j++) {
+
                     
+                    if (vector[i][j].isRevealed()) {revealedCells++;}
+
+                    if (game_over) {vector[i][j].setRevealed(true);}
+                                        
                     // reveal adjacent cells if no adjacent mines
                     if (vector[i][j].getAdjacentMines() == 0 && vector[i][j].isRevealed() && !vector[i][j].isMine()) {
                         
@@ -102,11 +120,21 @@ int main (int argc, char* argv[]) {
             }
         }
 
-        
+        // display all
         for (int i = 0; i < rows; i++) {
             std::cout << std::setw(padding) << "";
             for (int j = 0; j < cols; j++) {
-            
+
+                
+
+                if (revealedCells == rows*cols - mineCount) {
+                        vector[i][j].setRevealed(true);
+                        
+                        won = true;
+                        
+                        }
+
+                    
                 std::cout << vector[i][j].getSymbol() << " ";
 
             }
@@ -117,6 +145,7 @@ int main (int argc, char* argv[]) {
 
         // break out if game over
         if (game_over) {break;}
+        if (won) {std::cout << "\n\n\nYou won!" << std::endl; exit(0);}
 
         // otherwise get entered value of the user
         int userRowSelection = GetUserNumberSelection(rows);
@@ -147,7 +176,10 @@ int main (int argc, char* argv[]) {
                 game_over = true;
             }
         }
+    
     }
+
+    
 
     return 0;
 }
@@ -271,4 +303,17 @@ void PlaceMines(std::vector<std::vector<Cell>>& field, int numMines) {
     }
 }
 
+void SaveDataToFile(const std::vector<std::pair<std::string,int>>& data, const std::string& filename) {
+    std::ofstream outFile(filename);
 
+    if (!outFile) {
+        std::cerr << "Error opening file for writing: " << filename << std::endl;
+        return;
+    }
+
+    for (const auto& entry : data) {
+        outFile << entry.first << " " << entry.second << std::endl;
+    }
+
+    outFile.close();
+}
