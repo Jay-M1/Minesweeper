@@ -8,6 +8,8 @@
 #include <iomanip> // for setw()
 #include <ctime> // time for random seed
 #include <fstream>
+#include <chrono>
+#include <map>
 
 void PrintBanner();
 std::tuple<int,int,float> Determine_difficulty();
@@ -16,7 +18,9 @@ char GetUserCellInteraction();
 int GetUserNumberSelection(int limit);
 int getTerminalWidth();
 void PlaceMines(std::vector<std::vector<Cell>>& field, int numMines);
-void SaveDataToFile(const std::vector<int>& data, const std::string& filename);
+void SaveDataToFile(const std::vector<std::pair<std::string, double>>& data);
+std::string GetPlayerName();
+void PrintHighScores();
 
 int main (int argc, char* argv[]) {
 
@@ -51,6 +55,7 @@ int main (int argc, char* argv[]) {
     // game loop
     bool game_over = false;
     int mineCount = 0;
+    std::string playerName = GetPlayerName();
 
     for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
@@ -77,6 +82,7 @@ int main (int argc, char* argv[]) {
         }
     int revealedCells=0;
     bool won = false;
+    auto start = std::chrono::high_resolution_clock::now();
     while (true) {
 
         // Clear the terminal
@@ -145,7 +151,7 @@ int main (int argc, char* argv[]) {
 
         // break out if game over
         if (game_over) {break;}
-        if (won) {std::cout << "\n\n\nYou won!" << std::endl; exit(0);}
+        if (won) {std::cout << "\n\n\nYou won!" << std::endl; break;}
 
         // otherwise get entered value of the user
         int userRowSelection = GetUserNumberSelection(rows);
@@ -178,6 +184,16 @@ int main (int argc, char* argv[]) {
         }
     
     }
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
+
+    if (won){
+        std::vector<std::pair<std::string, double>> data = {{playerName, duration.count()}};
+        SaveDataToFile(data);
+    }
+
+    PrintHighScores();
+
 
     
 
@@ -303,17 +319,63 @@ void PlaceMines(std::vector<std::vector<Cell>>& field, int numMines) {
     }
 }
 
-void SaveDataToFile(const std::vector<std::pair<std::string,int>>& data, const std::string& filename) {
-    std::ofstream outFile(filename);
+void SaveDataToFile(const std::vector<std::pair<std::string, double>>& data) {
+    std::string filename = "HighScores.txt";
+    std::map<std::string, double> scoreMap;
 
+    // Read existing data if the file exists
+    std::ifstream inFile(filename);
+    if (inFile) {
+        std::string name;
+        double score;
+        while (inFile >> name >> score) {
+            if (scoreMap.find(name) == scoreMap.end() || score < scoreMap[name]) {
+                scoreMap[name] = score;
+            }
+        }
+        inFile.close();
+    }
+
+    // Update the map with new data
+    for (const auto& entry : data) {
+        if (scoreMap.find(entry.first) == scoreMap.end() || entry.second < scoreMap[entry.first]) {
+            scoreMap[entry.first] = entry.second;
+        }
+    }
+
+    // Write all data to the file
+    std::ofstream outFile(filename);
     if (!outFile) {
         std::cerr << "Error opening file for writing: " << filename << std::endl;
         return;
     }
 
-    for (const auto& entry : data) {
+    for (const auto& entry : scoreMap) {
         outFile << entry.first << " " << entry.second << std::endl;
     }
 
     outFile.close();
+}
+
+std::string GetPlayerName() {
+    std::string playername;
+    std::cout << "What is your Player Name?" << std::endl;
+    std::cin >> playername;
+    return playername;
+}
+
+void PrintHighScores() {
+    std::ifstream inFile("HighScores.txt");
+    if (!inFile) {
+        std::cerr << "Error opening file: " << "HighScores.txt" << std::endl;
+        return;
+    }
+
+    std::string line;
+    std::cout << "High Scores:" << std::endl;
+    while (std::getline(inFile, line)) {
+        std::cout << line << std::endl;
+    }
+
+    inFile.close();
 }
