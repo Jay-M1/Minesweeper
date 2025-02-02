@@ -228,33 +228,30 @@ void PrintBanner() {
     std::cout << "\n\n\n\n" << std::endl;
 }
 
-std::tuple<int,int,float> Determine_difficulty() {
+std::tuple<int, int, float> Determine_difficulty() {
     int difficulty;
-    std::cout << "Please select a difficulty: \nBeginner (1), Advanced (2) or Professional (3)?" << std::endl;
-    std::cout << "\n\nBeginner: Spielfeld von 8 mal 8 (64) Feldern mit 10 Minen (Minendichte 15,6 %)." << std::endl;
-    std::cout << "\nAdvanced: Spielfeld von 16 mal 16 (256) Feldern mit 40 Minen (15,6 %)." << std::endl;
-    std::cout << "\nProfessional: Spielfeld von 30 mal 16 (480) Feldern mit 99 Minen (20,6 %)." << std::endl;
-    std::cin >> difficulty;
+    while (true) {
+        std::cout << "Please select a difficulty: \nBeginner (1), Advanced (2) or Professional (3)?" << std::endl;
+        std::cout << "\n\nBeginner: Spielfeld von 8 mal 8 (64) Feldern mit 10 Minen (Minendichte 15,6 %)." << std::endl;
+        std::cout << "\nAdvanced: Spielfeld von 16 mal 16 (256) Feldern mit 40 Minen (15,6 %)." << std::endl;
+        std::cout << "\nProfessional: Spielfeld von 30 mal 16 (480) Feldern mit 99 Minen (20,6 %)." << std::endl;
+        std::cin >> difficulty;
 
-    if (difficulty == 1) {
-        
-        return std::make_tuple(8, 8, 0.156);
+        if (std::cin.fail()) {
+            std::cin.clear(); // Clear the error flag
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Ignore the invalid input
+            std::cout << "\nInvalid input. Please enter a number." << std::endl;
+        } else if (difficulty == 1) {
+            return std::make_tuple(8, 8, 0.156);
+        } else if (difficulty == 2) {
+            return std::make_tuple(16, 16, 0.156);
+        } else if (difficulty == 3) {
+            return std::make_tuple(30, 16, 0.206);
+        } else {
+            std::cout << "\nInvalid input. Try again." << std::endl;
+        }
     }
-    else if (difficulty == 2) {
-        
-        return std::make_tuple(16, 16, 0.156);
-    }
-    else if (difficulty == 3) {
-        
-        return std::make_tuple(30, 16, 0.206);
-    }
-    else {
-        std::cout << "\nInvalid input. Try again." << std::endl;
-        Determine_difficulty();
-    }
-    return std::make_tuple(0, 0, 0.0);
 }
-
 void GetCellUpdate(Cell cell){
     std::cout << "Cell is a mine: " << cell.isMine() << std::endl;
     std::cout << "Cell is flagged: " << cell.isFlagged() << std::endl;
