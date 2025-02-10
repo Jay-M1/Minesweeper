@@ -25,8 +25,10 @@ void PrintHighScores();
 int main (int argc, char* argv[]) {
 
     // create field
+    std::cout << "\033[2J\033[H";
     PrintBanner();
     std::tuple<int,int,float> dimension = Determine_difficulty();
+    std::cout << "\033[2J\033[H"; // clear terminal
     float diff = std::get<2>(dimension);
     int rows = std::get<0>(dimension);
     int cols = std::get<1>(dimension);
@@ -39,7 +41,7 @@ int main (int argc, char* argv[]) {
     std::uniform_real_distribution<> dis(0.0, 1.0);
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
-            if (dis(gen) < 0.01) {
+            if (dis(gen) < diff) {
                 vector[i][j].setMine(true);
             } else {
                 vector[i][j].setMine(false);
@@ -86,13 +88,13 @@ int main (int argc, char* argv[]) {
     while (true) {
 
         // Clear the terminal
-        //std::cout << "\033[2J\033[H";
+        std::cout << "\033[2J\033[H";
         std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" << std::endl;
 
         // loop over cells to adjust cell states
-        std::cout << "revcells" << revealedCells << std::endl;
-                    std::cout << "rows*cols" << rows*cols << std::endl;
-                    std::cout << "mines" << mineCount << std::endl;
+        //std::cout << "revcells" << revealedCells << std::endl; // professional debugging
+        //std::cout << "rows*cols" << rows*cols << std::endl;
+        //std::cout << "mines" << mineCount << std::endl;
                     revealedCells = 0;
         
         for (int counts = 0; counts < 64; counts++){
@@ -242,11 +244,11 @@ std::tuple<int, int, float> Determine_difficulty() {
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Ignore the invalid input
             std::cout << "\nInvalid input. Please enter a number." << std::endl;
         } else if (difficulty == 1) {
-            return std::make_tuple(8, 8, 0.156);
+            return std::make_tuple(8, 8, 0.08);
         } else if (difficulty == 2) {
-            return std::make_tuple(16, 16, 0.156);
+            return std::make_tuple(16, 16, 0.10);
         } else if (difficulty == 3) {
-            return std::make_tuple(30, 16, 0.206);
+            return std::make_tuple(30, 16, 0.15);
         } else {
             std::cout << "\nInvalid input. Try again." << std::endl;
         }
