@@ -18,14 +18,14 @@ char GetUserCellInteraction();
 int GetUserNumberSelection(int limit);
 int getTerminalWidth();
 void PlaceMines(std::vector<std::vector<Cell>>& field, int numMines);
-void SaveDataToFile(const std::vector<std::pair<std::string, double>>& data);
+void SaveDataToFile(const std::pair<std::string, double>& data);
 std::string GetPlayerName();
 void PrintHighScores();
 
 int main (int argc, char* argv[]) {
 
     // create field
-    std::cout << "\033[2J\033[H";
+    std::cout << "\033[2J\033[H"; // clear terminal
     PrintBanner();
     std::tuple<int,int,float> dimension = Determine_difficulty();
     std::cout << "\033[2J\033[H"; // clear terminal
@@ -95,7 +95,7 @@ int main (int argc, char* argv[]) {
         //std::cout << "revcells" << revealedCells << std::endl; // professional debugging
         //std::cout << "rows*cols" << rows*cols << std::endl;
         //std::cout << "mines" << mineCount << std::endl;
-                    revealedCells = 0;
+        revealedCells = 0;
         
         for (int counts = 0; counts < 64; counts++){
             revealedCells = 0;
@@ -120,11 +120,7 @@ int main (int argc, char* argv[]) {
                             }
                         }
                     }
-
-              
-
                 }
-              
             }
         }
 
@@ -185,12 +181,12 @@ int main (int argc, char* argv[]) {
             }
         }
     
-    }
+    } // while end
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration = end - start;
 
     if (won){
-        std::vector<std::pair<std::string, double>> data = {{playerName, duration.count()}};
+        std::pair<std::string, double> data = {playerName, duration.count()};
         SaveDataToFile(data);
     }
 
@@ -301,6 +297,7 @@ int getTerminalWidth() {
     return width;
 }
 
+// legacy
 void PlaceMines(std::vector<std::vector<Cell>>& field, int numMines) {
     int rows = field.size();
     int cols = field[0].size();
@@ -318,7 +315,7 @@ void PlaceMines(std::vector<std::vector<Cell>>& field, int numMines) {
     }
 }
 
-void SaveDataToFile(const std::vector<std::pair<std::string, double>>& data) {
+void SaveDataToFile(const std::pair<std::string, double>& data) {
     std::string filename = "HighScores.txt";
     std::map<std::string, double> scoreMap;
 
@@ -328,26 +325,19 @@ void SaveDataToFile(const std::vector<std::pair<std::string, double>>& data) {
         std::string name;
         double score;
         while (inFile >> name >> score) {
-            if (scoreMap.find(name) == scoreMap.end() || score < scoreMap[name]) {
-                scoreMap[name] = score;
-            }
+            scoreMap[name] = score;           
         }
         inFile.close();
     }
 
     // Update the map with new data
-    for (const auto& entry : data) {
-        if (scoreMap.find(entry.first) == scoreMap.end() || entry.second < scoreMap[entry.first]) {
-            scoreMap[entry.first] = entry.second;
-        }
+    
+    if (scoreMap.find(data.first) == scoreMap.end() || data.second < scoreMap[data.first]) {
+        scoreMap[data.first] = data.second;
     }
 
     // Write all data to the file
     std::ofstream outFile(filename);
-    if (!outFile) {
-        std::cerr << "Error opening file for writing: " << filename << std::endl;
-        return;
-    }
 
     for (const auto& entry : scoreMap) {
         outFile << entry.first << " " << entry.second << std::endl;

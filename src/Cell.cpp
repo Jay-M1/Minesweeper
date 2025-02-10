@@ -35,6 +35,7 @@ void Cell::setMine(bool mine) {
     this->mine = mine;
 }
 
+// legacy
 void Cell::isExploded() {
     this->exploded = false;
 }
